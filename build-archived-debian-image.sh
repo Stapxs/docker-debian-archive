@@ -26,7 +26,7 @@ else
     # We cannot build in one step, since the debootstrap process needs
     # --privilege.
     #
-    docker build -t debian-archived-builder . -f - <<EOF
+    docker build --platform linux/386 -t debian-archived-builder . -f - <<EOF
 FROM debian:bookworm-slim
 RUN sed -i 's|deb.debian.org|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list.d/debian.sources && \
     apt-get update && \
@@ -36,6 +36,7 @@ EOF
 
     rm -f cif || true
     docker run \
+           --platform linux/386 \
            --privileged \
            --cidfile=cif \
            debian-archived-builder \
@@ -52,7 +53,8 @@ EOF
     TEMP_TAG="debian-archived-stage2:${DIST}-$(date +%s)"
     docker tag "${STAGE2_ID}" "${TEMP_TAG}"
 
-    docker build \
+    docker b-platform linux/386 \
+           -uild \
            -t "${DOCKER_NAME}:${DIST}" \
            --label "last_modified_src=${LASTMOD}" \
            . \

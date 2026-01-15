@@ -34,8 +34,8 @@ jobs:
       
     - name: Test the built image
       run: |
-        docker run --rm madworx/debian-archive:woody cat /etc/debian_version
-        docker run --rm madworx/debian-archive:woody uname -m
+        docker run --rm --platform linux/386 madworx/debian-archive:woody cat /etc/debian_version
+        docker run --rm --platform linux/386 madworx/debian-archive:woody uname -m
     
     # - name: Push to Docker Hub (可选)
     #   if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
