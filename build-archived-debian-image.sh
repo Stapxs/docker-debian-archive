@@ -53,8 +53,8 @@ EOF
     TEMP_TAG="debian-archived-stage2:${DIST}-$(date +%s)"
     docker tag "${STAGE2_ID}" "${TEMP_TAG}"
 
-    docker b-platform linux/386 \
-           -uild \
+    docker build \
+           --platform linux/386 \
            -t "${DOCKER_NAME}:${DIST}" \
            --label "last_modified_src=${LASTMOD}" \
            . \
