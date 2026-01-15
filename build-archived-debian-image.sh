@@ -27,8 +27,9 @@ else
     # --privilege.
     #
     docker build -t debian-archived-builder . -f - <<EOF
-FROM debian:stretch-slim
-RUN apt-get update && \
+FROM debian:bookworm-slim
+RUN sed -i 's|deb.debian.org|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list.d/debian.sources && \
+    apt-get update && \
     apt-get install -y debootstrap
 ENTRYPOINT [ "/bin/bash", "-c" ]
 EOF
@@ -39,7 +40,7 @@ EOF
            --cidfile=cif \
            debian-archived-builder \
            "mkdir '/debian-${DIST}' \
-           && debootstrap --no-check-gpg \
+           && debootstrap --no-check-gpg --arch=i386 \
            '${DIST}' '/debian-${DIST}' \
            '${DEBIAN_MIRROR}'"
 
