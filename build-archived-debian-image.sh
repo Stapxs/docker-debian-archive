@@ -48,21 +48,23 @@ EOF
     STAGE2_ID="$(docker commit "${STAGE1_ID}")"
     echo "Stage 2 image ID: ${STAGE2_ID}"
 
-    # 如果 STAGE2_ID 以 sha256: 开头，直接使用镜像 ID
-    # 否则可能需要加上 sha256: 前缀
+    # 为临时镜像打标签，避免直接使用 sha256:... 格式
+    TEMP_TAG="debian-archived-stage2:${DIST}-$(date +%s)"
+    docker tag "${STAGE2_ID}" "${TEMP_TAG}"
+
     docker build \
            -t "${DOCKER_NAME}:${DIST}" \
            --label "last_modified_src=${LASTMOD}" \
-           --build-arg STAGE2_ID="${STAGE2_ID}" \
            . \
            -f - <<EOF
-FROM ${STAGE2_ID} AS build
+FROM ${TEMP_TAG} AS build
 FROM scratch
 COPY --from=build /debian-${DIST} /
 RUN echo "debian:${DIST}" > /etc/os-version.txt
 ENTRYPOINT [ "/bin/sh" ]
 EOF
     docker rm "${STAGE1_ID}"
+    docker rmi "${TEMP_TAG}"
 fi
 
 
