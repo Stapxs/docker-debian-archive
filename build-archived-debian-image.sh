@@ -59,11 +59,10 @@ EOF
            --label "last_modified_src=${LASTMOD}" \
            . \
            -f - <<EOF
-FROM ${TEMP_TAG} AS build
-FROM scratch
+FROM --platform=linux/386 ${TEMP_TAG} AS build
+FROM --platform=linux/386 scratch
 COPY --from=build /debian-${DIST} /
-RUN echo "debian:${DIST}" > /etc/os-version.txt
-ENTRYPOINT [ "/bin/sh" ]
+CMD [ "/bin/sh" ]
 EOF
     docker rm "${STAGE1_ID}"
     docker rmi "${TEMP_TAG}"
